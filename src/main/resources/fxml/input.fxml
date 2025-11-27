@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.mycompany.huffman.controller.MainController"
+      alignment="CENTER"
+      spacing="10">
+
+    <Label text="Digite algo:"/>
+    <TextField fx:id="campoTexto"/>
+    <Button text="Mostrar" onAction="#mostrarTexto"/>
+
+</VBox>

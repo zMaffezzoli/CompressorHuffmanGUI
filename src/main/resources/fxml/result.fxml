@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.mycompany.huffman.controller.ControllerResult"
+      alignment="CENTER"
+      spacing="20">
+
+    <!-- Título ou mensagem opcional -->
+    <Label text="Resultado:" style="-fx-font-size: 18px;"/>
+
+    <!-- Label que exibirá o texto passado pelo MainController -->
+    <Label fx:id="labelResultado"
+           style="-fx-text-fill: red; -fx-font-size: 24px;"/>
+
+</VBox>
