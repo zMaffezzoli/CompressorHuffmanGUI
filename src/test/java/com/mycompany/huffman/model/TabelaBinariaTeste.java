@@ -3,14 +3,14 @@ package com.mycompany.huffman.model;
 import org.junit.jupiter.api.Test;
 
 
-public class TabelaCodificadaTeste {
+public class TabelaBinariaTeste {
 
     @Test
     public void main() {
         String texto = "Pindamonhangaba";
         TabelaFrequencia tabelaFrequencia = new TabelaFrequencia(texto);
         Arvore arvore = new Arvore(tabelaFrequencia);
-        TabelaCodificada tabelaCodificada = new TabelaCodificada(arvore);
+        TabelaBinaria tabelaCodificada = new TabelaBinaria(arvore);
         System.out.println(tabelaCodificada.getTabela());
     }
 }

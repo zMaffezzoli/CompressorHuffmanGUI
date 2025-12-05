@@ -3,7 +3,7 @@ package com.mycompany.huffman.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TabelaCodificada {
+public class TabelaBinaria {
     private Map<String, String> tabela;
 
     public Map<String, String> getTabela() {
@@ -14,11 +14,11 @@ public class TabelaCodificada {
         this.tabela = tabela;
     }
 
-    public TabelaCodificada() {
+    public TabelaBinaria() {
         this.tabela = new HashMap<>();
     }
 
-    public TabelaCodificada(Arvore arvore) {
+    public TabelaBinaria(Arvore arvore) {
         this.tabela = new HashMap<>();
         this.createTable(arvore.getRaiz(), "");
     }

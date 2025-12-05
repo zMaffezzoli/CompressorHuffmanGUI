@@ -24,7 +24,7 @@ public class VisualizacaoArvoreTeste {
 
     @Test
     public void visualizarArvore() {
-        TabelaFrequencia tabela = new TabelaFrequencia("Banana");
+        TabelaFrequencia tabela = new TabelaFrequencia("Pindamonhangaba");
         Arvore arvore = new Arvore(tabela);
 
         System.out.println("Árvore de Huffman:");
