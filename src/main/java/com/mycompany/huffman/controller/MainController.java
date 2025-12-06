@@ -54,36 +54,53 @@ public class MainController {
 
     @FXML
     public void initialize() {
+        // Configura as colunas das tabelas
         colSymbolFreq.setCellValueFactory(new PropertyValueFactory<>("symbol"));
         colFreq.setCellValueFactory(new PropertyValueFactory<>("frequency"));
         colSymbolCode.setCellValueFactory(new PropertyValueFactory<>("symbol"));
         colCode.setCellValueFactory(new PropertyValueFactory<>("code"));
 
+        // Remove a seleção padrão para estética
         freqTable.setSelectionModel(null);
         codeTable.setSelectionModel(null);
 
+        // Configura o Zoom e o Pan (Arrastar)
         setupZoomAndPan();
     }
 
     private void setupZoomAndPan() {
+        // 1. Clipping: Garante que a árvore não desenhe fora da área visível (caixa cinza)
         Rectangle clip = new Rectangle();
         clip.widthProperty().bind(treeViewport.widthProperty());
         clip.heightProperty().bind(treeViewport.heightProperty());
         treeViewport.setClip(clip);
 
+        // 2. Lógica de Scroll (ZOOM) - Otimizada para Linux/Windows
         treeViewport.setOnScroll(event -> {
+            // Só executa se a tecla CTRL estiver pressionada
             if (event.isControlDown()) {
-                double zoomFactor = 1.05;
+                // Impede que a página/scrollpane role junto
+                event.consume();
+
                 double deltaY = event.getDeltaY();
-                if (deltaY < 0) {
-                    zoomFactor = 1 / zoomFactor;
+
+                // Proteção: Alguns trackpads enviam delta 0 (movimento horizontal), ignoramos.
+                if (deltaY == 0) {
+                    return;
                 }
+
+                // Lógica Simplificada:
+                // Se deltaY positivo (scroll p/ cima) -> Aumenta 10% (x 1.1)
+                // Se deltaY negativo (scroll p/ baixo) -> Diminui 10% (x 0.9)
+                double zoomFactor = (deltaY > 0) ? 1.1 : 0.9;
+
+                // Aplica a escala no Pane interno
                 treePane.setScaleX(treePane.getScaleX() * zoomFactor);
                 treePane.setScaleY(treePane.getScaleY() * zoomFactor);
-                event.consume();
             }
         });
 
+        // 3. Lógica de Clique (Início do Arrastar - Pan)
         treePane.setOnMousePressed(event -> {
             mouseAnchorX = event.getSceneX();
             mouseAnchorY = event.getSceneY();
@@ -92,11 +109,14 @@ public class MainController {
             treeViewport.setCursor(javafx.scene.Cursor.CLOSED_HAND);
         });
 
+        // 4. Lógica de Arrastar (Movimento do Mouse)
         treePane.setOnMouseDragged(event -> {
+            // Calcula o deslocamento
             treePane.setTranslateX(translateAnchorX + event.getSceneX() - mouseAnchorX);
             treePane.setTranslateY(translateAnchorY + event.getSceneY() - mouseAnchorY);
         });
 
+        // 5. Soltar o Mouse
         treePane.setOnMouseReleased(event -> {
             treeViewport.setCursor(javafx.scene.Cursor.DEFAULT);
         });
@@ -124,7 +144,7 @@ public class MainController {
     @FXML
     private void handleProcess() {
         try {
-            // 1. Obter o texto
+            // 1. Obter o texto da aba correta
             String text = "";
             if (inputTabPane.getSelectionModel().getSelectedItem() == tabText) {
                 text = inputArea.getText();
@@ -133,28 +153,30 @@ public class MainController {
                 text = reader.readContent();
             }
 
+            // Validação simples
             if (text == null || text.isEmpty()) {
                 binaryOutput.setText("Por favor, insira um texto ou selecione um arquivo.");
                 return;
             }
 
-            // 2. CHAMAR A SUA LÓGICA (BACKEND)
+            // 2. BACKEND: Instancia sua classe Compressor (que gera tudo)
             Compressor compressor = new Compressor(text);
 
-            // 3. Exibir o resultado Binário
+            // 3. Exibir o resultado Binário na tela
             binaryOutput.setText(compressor.getBinario());
 
-            // 4. Popular as tabelas
+            // 4. Popular as tabelas (Cruzando Frequência com Código Binário)
             ObservableList<HuffmanRow> tableData = FXCollections.observableArrayList();
 
-            // Pegamos a tabela de frequência e a tabela binária para cruzar os dados
             Map<Character, Integer> freqMap = compressor.getTabelaFrequencia().getTabela();
             Map<String, String> binaryMap = compressor.getTabelaBinaria().getTabela();
 
             for (Map.Entry<Character, Integer> entry : freqMap.entrySet()) {
                 String symbol = String.valueOf(entry.getKey());
                 Integer frequency = entry.getValue();
-                String code = binaryMap.get(symbol); // Pega o código binário correspondente
+
+                // Pega o código binário correspondente ao símbolo
+                String code = binaryMap.get(symbol);
 
                 tableData.add(new HuffmanRow(symbol, frequency, code));
             }
@@ -162,8 +184,7 @@ public class MainController {
             freqTable.setItems(tableData);
             codeTable.setItems(tableData);
 
-            // 5. Desenhar a Árvore Real
-            // Usamos a raiz da árvore gerada pela sua lógica
+            // 5. Desenhar a Árvore Visual
             if (compressor.getArvore() != null) {
                 drawTree(compressor.getArvore().getRaiz());
             }
@@ -174,58 +195,68 @@ public class MainController {
         }
     }
 
-    // Método adaptado para aceitar sua classe 'No'
+    // Método de desenho adaptado para sua classe 'No'
     private void drawTree(No root) {
+        // Limpa desenhos anteriores
         treePane.getChildren().clear();
+
+        // Reseta posição e zoom
         treePane.setTranslateX(0);
         treePane.setTranslateY(0);
         treePane.setScaleX(1);
         treePane.setScaleY(1);
 
-        if (root != null) drawTreeRecursive(root, 0, 50, 200);
+        if (root != null) {
+            // Inicia o desenho recursivo
+            drawTreeRecursive(root, 0, 50, 200);
+        }
     }
 
     private void drawTreeRecursive(No node, double x, double y, double hGap) {
-        // Verifica filhos usando os getters da sua classe No
+        // --- Desenha Linhas para os Filhos ---
+
+        // Filho Esquerdo
         if (node.getFilho_esquerdo() != null) {
             double childX = x - hGap;
-            double childY = y + 100;
+            double childY = y + 100; // Distância vertical entre níveis
+
             Line line = new Line(x, y, childX, childY);
             line.setStroke(Color.GRAY);
             line.setStrokeWidth(2);
             treePane.getChildren().add(line);
-            // Recursividade
+
             drawTreeRecursive(node.getFilho_esquerdo(), childX, childY, hGap * 0.6);
         }
 
+        // Filho Direito
         if (node.getFilho_direito() != null) {
             double childX = x + hGap;
             double childY = y + 100;
+
             Line line = new Line(x, y, childX, childY);
             line.setStroke(Color.GRAY);
             line.setStrokeWidth(2);
             treePane.getChildren().add(line);
-            // Recursividade
+
             drawTreeRecursive(node.getFilho_direito(), childX, childY, hGap * 0.6);
         }
 
-        // Desenha o Nó
+        // --- Desenha o Nó (Círculo) ---
         Circle circle = new Circle(x, y, 25);
 
-        // Se for folha, pinta de uma cor, se for nó interno, de outra
-        // Usamos seu método isFolha()
         boolean isLeaf = node.isFolha();
-        circle.setFill(isLeaf ? Color.web("#e74c3c") : Color.web("#34495e")); // Vermelho para folha, Azul escuro para interno
+        // Cores diferentes para folha (Vermelho) e nó interno (Azul Escuro)
+        circle.setFill(isLeaf ? Color.web("#e74c3c") : Color.web("#34495e"));
         circle.setStroke(Color.BLACK);
         circle.setStrokeWidth(2);
 
-        // Texto do Label
-        // Se for folha, mostra o Caracter. Se for nó interno, mostramos apenas a frequência para não poluir
-        // (Já que sua classe No concatena strings tipo "a + b + c" nos nós internos)
+        // --- Desenha o Texto ---
         String labelText;
         if (isLeaf) {
+            // Se for folha, mostra: Letra + Frequência
             labelText = node.getCaracter() + "\n" + node.getFrequencia();
         } else {
+            // Se for nó interno, mostra apenas Frequência (para não poluir)
             labelText = String.valueOf(node.getFrequencia());
         }
 
@@ -236,7 +267,7 @@ public class MainController {
         text.setFill(Color.WHITE);
         text.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;");
 
-        // Pequeno ajuste de centralização dependendo se tem quebra de linha ou não
+        // Ajuste fino da posição do texto se for folha (por causa da quebra de linha)
         if (isLeaf) text.setY(y);
 
         treePane.getChildren().addAll(circle, text);
