@@ -19,6 +19,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.stage.FileChooser;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 import java.io.File;
 import java.util.Map;
@@ -212,9 +214,7 @@ public class MainController {
         }
     }
 
-    // Método de desenho adaptado para sua classe 'No'
     private void drawTree(No root) {
-        // Limpa desenhos anteriores
         treePane.getChildren().clear();
 
         // Reseta posição e zoom
@@ -224,69 +224,108 @@ public class MainController {
         treePane.setScaleY(1);
 
         if (root != null) {
-            // Inicia o desenho recursivo
-            drawTreeRecursive(root, 0, 50, 200);
+            // --- CÁLCULO DINÂMICO DE ESPAÇAMENTO ---
+            int profundidade = getAlturaArvore(root);
+
+            // Lógica: Cada nó folha precisa de uns 70px de espaço mínimo (largura da cápsula + margem).
+            // A largura inicial necessária é: 70 * 2^(profundidade - 2)
+            // Isso garante que, ao dividir por 2 várias vezes, o último nível ainda tenha ~70px.
+
+            double espacoMinimoFolha = 75.0;
+            double initialGap = espacoMinimoFolha * Math.pow(2, Math.max(1, profundidade - 2));
+
+            // Inicia o desenho com o gap calculado
+            drawTreeRecursive(root, 0, 50, initialGap);
         }
     }
 
     private void drawTreeRecursive(No node, double x, double y, double hGap) {
-        // --- Desenha Linhas para os Filhos ---
+        // --- 1. Desenha as Linhas (Arestas) ---
+        double nextGap = hGap * 0.5;
 
-        // Filho Esquerdo
+        // Altura fixa da cápsula (usada para calcular onde a linha conecta)
+        double capsuleHeight = 52;
+
         if (node.getFilho_esquerdo() != null) {
             double childX = x - hGap;
-            double childY = y + 100; // Distância vertical entre níveis
+            double childY = y + 100;
 
-            Line line = new Line(x, y, childX, childY);
+            // Ajuste: A linha sai do centro inferior da cápsula atual
+            // e vai até o centro superior da cápsula filha
+            Line line = new Line(x, y + (capsuleHeight/2), childX, childY - (capsuleHeight/2));
             line.setStroke(Color.GRAY);
             line.setStrokeWidth(2);
+            line.toBack();
             treePane.getChildren().add(line);
 
-            drawTreeRecursive(node.getFilho_esquerdo(), childX, childY, hGap * 0.6);
+            drawTreeRecursive(node.getFilho_esquerdo(), childX, childY, nextGap);
         }
 
-        // Filho Direito
         if (node.getFilho_direito() != null) {
             double childX = x + hGap;
             double childY = y + 100;
 
-            Line line = new Line(x, y, childX, childY);
+            Line line = new Line(x, y + (capsuleHeight/2), childX, childY - (capsuleHeight/2));
             line.setStroke(Color.GRAY);
             line.setStrokeWidth(2);
+            line.toBack();
             treePane.getChildren().add(line);
 
-            drawTreeRecursive(node.getFilho_direito(), childX, childY, hGap * 0.6);
+            drawTreeRecursive(node.getFilho_direito(), childX, childY, nextGap);
         }
 
-        // --- Desenha o Nó (Círculo) ---
-        Circle circle = new Circle(x, y, 25);
+        // --- 2. Configura o Texto ---
+        String rawChar = node.getCaracter() == null ? "" : node.getCaracter();
 
-        boolean isLeaf = node.isFolha();
-        // Cores diferentes para folha (Vermelho) e nó interno (Azul Escuro)
-        circle.setFill(isLeaf ? Color.web("#e74c3c") : Color.web("#34495e"));
-        circle.setStroke(Color.BLACK);
-        circle.setStrokeWidth(2);
+        // Sanitização (Enter, Tab, etc)
+        String charText = rawChar
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
 
-        // --- Desenha o Texto ---
-        String labelText;
-        if (isLeaf) {
-            // Se for folha, mostra: Letra + Frequência
-            labelText = node.getCaracter() + "\n" + node.getFrequencia();
-        } else {
-            // Se for nó interno, mostra apenas Frequência (para não poluir)
-            labelText = String.valueOf(node.getFrequencia());
-        }
+        String freqText = String.valueOf(node.getFrequencia());
+        String fullLabel = charText + "\n" + freqText;
 
-        Text text = new Text(labelText);
+        Text text = new Text(fullLabel);
         text.setBoundsType(TextBoundsType.VISUAL);
-        text.setX(x - 5);
-        text.setY(y + 5);
+        text.setFont(Font.font("System", FontWeight.BOLD, 13));
         text.setFill(Color.WHITE);
-        text.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;");
+        text.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        text.setWrappingWidth(0);
 
-        // Ajuste fino da posição do texto se for folha (por causa da quebra de linha)
-        if (isLeaf) text.setY(y);
+        // --- 3. Cria a Cápsula ---
+        double textWidth = text.getLayoutBounds().getWidth();
+        // Largura dinâmica (mínimo 52, ou tamanho do texto + 30px de margem)
+        double capsuleWidth = Math.max(capsuleHeight, textWidth + 30);
 
-        treePane.getChildren().addAll(circle, text);
+        Rectangle capsule = new Rectangle();
+        capsule.setWidth(capsuleWidth);
+        capsule.setHeight(capsuleHeight);
+        capsule.setArcWidth(capsuleHeight);
+        capsule.setArcHeight(capsuleHeight);
+
+        // Centraliza
+        capsule.setX(x - (capsuleWidth / 2));
+        capsule.setY(y - (capsuleHeight / 2));
+
+        // Cores
+        boolean isLeaf = node.isFolha();
+        capsule.setFill(isLeaf ? Color.web("#e74c3c") : Color.web("#34495e"));
+        capsule.setStroke(Color.BLACK);
+        capsule.setStrokeWidth(2);
+
+        // --- 4. Posiciona o Texto ---
+        text.setX(x - (textWidth / 2));
+        text.setY(y + text.getLayoutBounds().getHeight() / 4);
+
+        treePane.getChildren().addAll(capsule, text);
+    }
+
+    // Metodo auxiliar para calcular a profundidade da arvore
+    private int getAlturaArvore(No node) {
+        if (node == null) return 0;
+        int esquerda = getAlturaArvore(node.getFilho_esquerdo());
+        int direita = getAlturaArvore(node.getFilho_direito());
+        return Math.max(esquerda, direita) + 1;
     }
 }
