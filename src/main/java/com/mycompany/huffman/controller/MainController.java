@@ -327,7 +327,7 @@ public class MainController {
         treePane.getChildren().addAll(capsule, text);
     }
 
-    // Método recursivo que define o X de cada nó (Bottom-Up)
+    // Metodo recursivo que define o X de cada nó (Bottom-Up)
     private void calculatePositions(No node, Map<No, Double> xPositions, AtomicInteger leafIndex, double spacing) {
         if (node == null) return;
 
