@@ -51,9 +51,7 @@ com.mycompany.huffman
 
 ## Diagrama UML
 Abaixo está o diagrama UML que representa a estrutura do projeto.
-```markdown
-![Diagrama UML](./documents/DiagramaUML.png)
-```
+![DiagramaUML.png](documents/DiagramaUML.png)
 
 ---
 
