@@ -21,7 +21,7 @@ A aplicação utiliza **Maven** como gerenciador de dependências e estrutura mo
     <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java-Icon">
     <img src="https://img.shields.io/badge/javafx-%23FF0000.svg?style=for-the-badge&logo=javafx&logoColor=white" alt="JavaFx-Icon">
     <img src="https://img.shields.io/badge/apachemaven-C71A36.svg?style=for-the-badge&logo=apachemaven&logoColor=white" alt="ApacheMaven-Icon">
-    <img src="https://img.shields.io/badge/JUnit5-%23f5f5f5?style=for-the-badge&logo=junit5&logoColor=dc524a" alt="Junit5-Icon">
+    <img src="https://img.shields.io/badge/JUnit5-%23f5f5f5?style=for-the-badge&logo=junit5&logoColor=dc524a" alt="JUnit 5-Icon">
 </div>
 
 ---
@@ -42,9 +42,9 @@ com.mycompany.huffman
  │    ├── TabelaBinaria.java     # Gera a tebela dos caracteres em binário
  │    └── TabelaFrequencia.java  # Gera a tebela de frequencia dos caracteres
  └── util
-      ├── Leitor.java                 # Classe abstrata para ler texto
-      ├── LeitorArquivo.java          # Leitor do arquivo .txt
-      └── LeitorString.java           # Leitor do texto recebido
+      ├── Leitor.java            # Classe abstrata para ler texto
+      ├── LeitorArquivo.java     # Leitor do arquivo .txt
+      └── LeitorString.java      # Leitor do texto recebido
 ```
 
 ---
