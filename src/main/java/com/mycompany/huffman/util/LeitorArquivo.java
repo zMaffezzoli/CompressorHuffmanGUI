@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class LeitorArquivo extends Leitor {
-    private final File file;
+    private final File arquivo;
 
     public LeitorArquivo(File file) {
-        this.file = file;
+        this.arquivo = file;
     }
 
     @Override
     public String lerConteudo() throws IOException {
-        if (file == null || !file.exists()) throw new IOException("Arquivo inválido.");
-        return Files.readString(file.toPath());
+        if (arquivo == null || !arquivo.exists()) throw new IOException("Arquivo inválido.");
+        return Files.readString(arquivo.toPath());
     }
 }
