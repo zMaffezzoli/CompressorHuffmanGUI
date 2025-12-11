@@ -3,5 +3,5 @@ import java.io.IOException;
 
 
 public abstract class Leitor {
-    public abstract String readContent() throws IOException;
+    public abstract String lerConteudo() throws IOException;
 }

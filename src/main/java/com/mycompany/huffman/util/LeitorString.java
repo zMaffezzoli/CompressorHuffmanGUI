@@ -8,7 +8,7 @@ public class LeitorString extends Leitor {
     }
 
     @Override
-    public String readContent() {
+    public String lerConteudo() {
         return content;
     }
 }

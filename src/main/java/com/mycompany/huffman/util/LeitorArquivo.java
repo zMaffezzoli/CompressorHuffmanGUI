@@ -11,7 +11,7 @@ public class LeitorArquivo extends Leitor {
     }
 
     @Override
-    public String readContent() throws IOException {
+    public String lerConteudo() throws IOException {
         if (file == null || !file.exists()) throw new IOException("Arquivo inválido.");
         return Files.readString(file.toPath());
     }

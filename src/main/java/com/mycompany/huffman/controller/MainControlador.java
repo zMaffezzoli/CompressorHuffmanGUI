@@ -2,17 +2,24 @@ package com.mycompany.huffman.controller;
 
 import com.mycompany.huffman.model.Compressor;
 import com.mycompany.huffman.model.LinhaTabela;
+
 import com.mycompany.huffman.util.*;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import javafx.fxml.FXML;
+
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+
 import javafx.stage.FileChooser;
+
 import java.io.File;
 import java.io.IOException;
+
 import java.util.Map;
 
 public class MainControlador {
@@ -122,13 +129,13 @@ public class MainControlador {
             Leitor leitor = new LeitorString(areaTexto.getText());
 
             // Conteudo do textarea
-            texto = leitor.readContent();
+            texto = leitor.lerConteudo();
 
         } else if (arquivoSelecionado != null) {
             Leitor leitor = new LeitorArquivo(arquivoSelecionado);
 
             // Conteudo do arquivo
-            texto = leitor.readContent();
+            texto = leitor.lerConteudo();
             if (texto != null) texto = texto.replaceAll("[\\r\\n]+$", "");
         }
         return texto;

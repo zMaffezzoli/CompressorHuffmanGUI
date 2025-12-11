@@ -1,6 +1,7 @@
 package com.mycompany.huffman.controller;
 
 import com.mycompany.huffman.model.No;
+
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;

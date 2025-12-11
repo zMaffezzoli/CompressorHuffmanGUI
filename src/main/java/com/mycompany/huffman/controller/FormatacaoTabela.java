@@ -1,11 +1,13 @@
 package com.mycompany.huffman.controller;
 
 import com.mycompany.huffman.model.LinhaTabela;
+
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+
 import javafx.util.Callback;
 
 public class FormatacaoTabela {
