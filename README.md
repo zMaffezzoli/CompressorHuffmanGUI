@@ -14,8 +14,6 @@ O objetivo é permitir que o usuário:
 
 A aplicação utiliza **Maven** como gerenciador de dependências e estrutura modular adequada ao Java 21.
 
----
-
 ## Tecnologias utilizadas
 <div display="flex">
     <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java-Icon">
@@ -24,7 +22,14 @@ A aplicação utiliza **Maven** como gerenciador de dependências e estrutura mo
     <img src="https://img.shields.io/badge/JUnit5-%23f5f5f5?style=for-the-badge&logo=junit5&logoColor=dc524a" alt="JUnit 5-Icon">
 </div>
 
----
+## Demonstração
+![Gif demonstração do projeto](documents/RunCompressor.gif)
+
+##  Visualização da Árvore de Huffman
+A interface JavaFX plota a árvore binária dinamicamente, permitindo visualizar:
+- Nós internos (somatórios de frequência)
+- Nós folha (caracteres)
+- Caminhos 0/1 gerados
 
 ##  Estrutura Geral do Projeto
 
@@ -47,13 +52,9 @@ com.mycompany.huffman
       └── LeitorString.java      # Leitor do texto recebido
 ```
 
----
-
 ## Diagrama UML
 Abaixo está o diagrama UML que representa a estrutura do projeto.
-![DiagramaUML.png](documents/DiagramaUML.png)
-
----
+![Diagrama UML do projeto](documents/DiagramaUML.png)
 
 ##  Como Executar o Projeto
 ### Pré‑requisitos
@@ -67,18 +68,8 @@ mvn clean install
 mvn javafx:run
 ```
 
----
-
 ##  Testes
 O projeto utiliza **JUnit 5**. Para executar:
 ```bash
 mvn test -Dtest=<arquivoDeTeste.java>
 ```
-
----
-
-##  Visualização da Árvore de Huffman
-A interface JavaFX plota a árvore binária dinamicamente, permitindo visualizar:
-- Nós internos (somatórios de frequência)
-- Nós folha (caracteres)
-- Caminhos 0/1 gerados
